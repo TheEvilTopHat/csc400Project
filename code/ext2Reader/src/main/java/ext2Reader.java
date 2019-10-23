@@ -8,6 +8,15 @@
  *
  * @author joshua
  */
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.util.Scanner;
+
+
 public class ext2Reader {
 
     /**
@@ -15,7 +24,20 @@ public class ext2Reader {
      */
     public static void main(String[] args) {
         // TODO code application logic here
-        System.out.println("TODO");
+        
+        //try to open file throw exception if no file found break if found file
+        while(true){
+            try {
+                Scanner scan = new Scanner(System.in);
+                String filename = scan.nextLine();
+                RandomAccessFile raf = new RandomAccessFile(filename,"r");
+                System.out.println("OPENING FILE");
+                break;
+            }
+            catch(FileNotFoundException e){
+                System.out.println("NO FILE FOUND");
+            }
+        }
     }
     
 }
