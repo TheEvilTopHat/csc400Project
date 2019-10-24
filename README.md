@@ -1,6 +1,6 @@
 # csc400Project
 
-
+![hxh computer skills](https://pm1.narvii.com/6905/7cc0d542af3945da58a7a4903d41316fcb7994d1r1-1440-805v2_hq.jpg)
 
 Due 12/3:
 
