@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 
 public class GroupDescriptor  throws FileNotFoundException {
     //location of VD for my computer change for user
-    public RandomAccessFile  acessSuperBlock=acessSuperBlock= new RandomAccessFile();//File path needs to be added
+    public RandomAccessFile  acessSuperBlock;//File path needs to be added
        // ("F:\\Fall2019\\CSC\\CSC400\\400Project\\src\\virtdisk (1)","r");
 
     public int block_bitmap;
@@ -38,6 +38,9 @@ public class GroupDescriptor  throws FileNotFoundException {
     public int used_dirs_count;
     
  
+    GroupDescriptor{
+    
+    }
      public int searchBlock(int seekoffset,int byteOffset, int length) throws IOException{
         acessSuperBlock.seek(seekoffset);
         int x = 0;       

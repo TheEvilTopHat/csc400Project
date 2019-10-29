@@ -9,9 +9,9 @@ import java.util.logging.Logger;
 
 
 //TODO EVERYTHING
-class Superblock {
+/*class Superblock {
     //location of VD for my computer change for user
-    public RandomAccessFile  acessSuperBlock=acessSuperBlock= new RandomAccessFile();//File path needs to be added
+    public RandomAccessFile acessSuperBlock;//File path needs to be added
        // ("F:\\Fall2019\\CSC\\CSC400\\400Project\\src\\virtdisk (1)","r");
 
     
@@ -94,3 +94,4 @@ class Superblock {
         
         
     }
+*/

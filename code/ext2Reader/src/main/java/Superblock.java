@@ -11,7 +11,7 @@ import java.util.logging.Logger;
 //TODO EVERYTHING
 class Superblock {
     //location of VD for my computer change for user
-    public RandomAccessFile  acessSuperBlock=acessSuperBlock= new RandomAccessFile();//File path needs to be added
+    public RandomAccessFile acessSuperBlock;//File path needs to be added
        // ("F:\\Fall2019\\CSC\\CSC400\\400Project\\src\\virtdisk (1)","r");
     
     public int inodes_count;
@@ -51,7 +51,7 @@ class Superblock {
     public int atime;
     public int ctime;
     public int mtime;
-     public int dtime;
+    public int dtime;
     public int gid;
     public int links_count;
     public int blocks;
@@ -59,8 +59,16 @@ class Superblock {
         
     
     
-    Superblock() throws FileNotFoundException{
-  
+    Superblock(RandomAccessFile raf) {
+        this.acessSuperBlock = raf;
+        try{
+            forsuperblock();
+            forBlockGroupDescrip();
+            forInode();
+        }
+        catch(IOException e) {
+            System.out.println(e);
+        }
     }
     
     public int searchBlock(int seekoffset,int byteOffset, int length) throws IOException{
@@ -82,7 +90,7 @@ class Superblock {
         } catch (IOException ex) {
             Logger.getLogger(Superblock.class.getName()).log(Level.SEVERE, null, ex);
         }
-        return 404 ;
+        return -1;
     }
     //
     public void forsuperblock() throws IOException{
@@ -170,9 +178,5 @@ class Superblock {
         //System.out.println(i_flags);
         
     }
-        
-        
-        
-        
-        
-    }
+                          
+}

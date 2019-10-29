@@ -21,6 +21,10 @@ import java.util.Scanner;
 
 public class ext2Reader {
     
+    //class variables
+    String currentDirPath; //full path to current dir
+    
+    //functions to interact with the ext2 file system
     static void changeFolder(String folder){
         
     }
@@ -45,6 +49,7 @@ public class ext2Reader {
         while(true){
             try {
                 //on my pc it's at /home/joshua/Documents/csc400Project/virtdisk
+                System.out.print("FILE PATH:");
                 String filename = scan.nextLine();
                 raf = new RandomAccessFile(filename,"r");
                 System.out.println("OPENING FILE");
