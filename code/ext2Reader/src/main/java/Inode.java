@@ -9,7 +9,7 @@ import java.util.logging.Logger;
 
 
 //TODO EVERYTHING
-/*class Superblock {
+class Inode {
     //location of VD for my computer change for user
     public RandomAccessFile acessSuperBlock;//File path needs to be added
        // ("F:\\Fall2019\\CSC\\CSC400\\400Project\\src\\virtdisk (1)","r");
@@ -20,16 +20,24 @@ import java.util.logging.Logger;
     public int atime;
     public int ctime;
     public int mtime;
-     public int dtime;
+    public int dtime;
     public int gid;
     public int links_count;
     public int blocks;
     public int flags;
+    public int inode_table;
         
     
     
-    Inode() throws FileNotFoundException{
-  
+    Inode(RandomAccessFile raf,int inodeTable) {
+        this.acessSuperBlock = raf;
+        inode_table = inodeTable;
+        try{
+            forInode();
+        }
+        catch(IOException e) {
+            System.out.println(e);
+        }
     }
     
     public int searchBlock(int seekoffset,int byteOffset, int length) throws IOException{
@@ -93,5 +101,4 @@ import java.util.logging.Logger;
         
         
         
-    }
-*/
+}

@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GroupDescriptor  throws FileNotFoundException {
+public class GroupDescriptor {
     //location of VD for my computer change for user
     public RandomAccessFile  acessSuperBlock;//File path needs to be added
        // ("F:\\Fall2019\\CSC\\CSC400\\400Project\\src\\virtdisk (1)","r");
@@ -38,8 +38,14 @@ public class GroupDescriptor  throws FileNotFoundException {
     public int used_dirs_count;
     
  
-    GroupDescriptor{
-    
+    GroupDescriptor(RandomAccessFile raf) {
+        this.acessSuperBlock = raf;
+        try{
+            forBlockGroupDescrip();
+        }
+        catch(IOException e) {
+            System.out.println(e);
+        }
     }
      public int searchBlock(int seekoffset,int byteOffset, int length) throws IOException{
         acessSuperBlock.seek(seekoffset);

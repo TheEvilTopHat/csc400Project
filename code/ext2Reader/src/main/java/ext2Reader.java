@@ -62,6 +62,10 @@ public class ext2Reader {
         
         //create superblock class and pass the file
         Superblock sb = new Superblock(raf); //superblock class
+        //create group discriptor class
+        GroupDescriptor gd = new GroupDescriptor(raf);
+        //create base indode class
+        Inode i = new Inode(raf,gd.inode_table);
         //go to root
         changeFolder("/");
         
