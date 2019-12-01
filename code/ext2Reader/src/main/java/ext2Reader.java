@@ -10,11 +10,25 @@
  */
 
 //imports for file handling 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+
+//imports for text input
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 //imports for text input
 import java.util.Scanner;
@@ -28,6 +42,8 @@ public class ext2Reader {
     static String previousDir = "";
     static String currentDirPath = "/root/"; //full path to current dir
     static InodeTable currentIT;
+    static  InputStream source;
+    static  OutputStream dest;
     
     //functions to interact with the ext2 file system
     static void help(){
@@ -74,7 +90,7 @@ public class ext2Reader {
         }
     }
 
-    static void copyFile(String desiredFilePath, String fileName, String pathforCopiedContents) throws IOException{//copies a file and places it in a another folder
+   static void copyFile(String desiredFilePath, String fileName, String pathforCopiedContents) throws IOException{//copies a file and places it in a another folder
        
         try{
            source= new FileInputStream(desiredFilePath);//Path to what file will be copied
@@ -94,6 +110,7 @@ public class ext2Reader {
            source.close();//end stream
            System.out.println(fileName+" from "+  pathforCopiedContents +" has been copied to " +desiredFilePath);
         }
+    }
 
     static void listContents(InodeTable it){
         //output all folders
