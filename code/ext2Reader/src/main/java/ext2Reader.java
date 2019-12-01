@@ -93,17 +93,17 @@ public class ext2Reader {
    static void copyFile(String desiredFilePath, String fileName, String pathforCopiedContents) throws IOException{//copies a file and places it in a another folder
        
         try{
-           source= new FileInputStream(desiredFilePath);//Path to what file will be copied
-           File copiedContents= new File(pathforCopiedContents+"/"+fileName);//where will the copied file be stored in on the Host Drive             
-            Path folder= Paths.get(pathforCopiedContents);//Path to the where the folder will be created
+           source= new FileInputStream(desiredFilePath+"/"+fileName);//Path to to where the desired file is
+           //where will the copied file be stored in on the Host Drive             
+            Path folder= Paths.get(pathforCopiedContents+"\\CopiedContents");//Path to the where the new folder will be created
             if (Files.exists(folder, LinkOption.NOFOLLOW_LINKS)){//if the folder already exist do nothing
         }
             else{//create the folder for it to be able to store files
                 Files.createDirectories(Paths.get(pathforCopiedContents));
                    
         }           
-            copiedContents.createNewFile();//create a file for the copied contents
-            Path fileCopied= Paths.get(pathforCopiedContents+"/"+fileName);//path for copied contents
+            
+            Path fileCopied= Paths.get(pathforCopiedContents+"\\CopiedContents\\"+fileName));//path for copied contents will be placed here
             Files.copy(source, fileCopied, StandardCopyOption.REPLACE_EXISTING);//copy the file and place it in new location
             
         }finally{
