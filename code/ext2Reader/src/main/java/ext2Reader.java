@@ -73,9 +73,28 @@ public class ext2Reader {
             }
         }
     }
-    static void copyFile(String from, String to){
-        
-    }
+
+    static void copyFile(String desiredFilePath, String fileName, String pathforCopiedContents) throws IOException{//copies a file and places it in a another folder
+       
+        try{
+           source= new FileInputStream(desiredFilePath);//Path to what file will be copied
+           File copiedContents= new File(pathforCopiedContents+"/"+fileName);//where will the copied file be stored in on the Host Drive             
+            Path folder= Paths.get(pathforCopiedContents);//Path to the where the folder will be created
+            if (Files.exists(folder, LinkOption.NOFOLLOW_LINKS)){//if the folder already exist do nothing
+        }
+            else{//create the folder for it to be able to store files
+                Files.createDirectories(Paths.get(pathforCopiedContents));
+                   
+        }           
+            copiedContents.createNewFile();//create a file for the copied contents
+            Path fileCopied= Paths.get(pathforCopiedContents+"/"+fileName);//path for copied contents
+            Files.copy(source, fileCopied, StandardCopyOption.REPLACE_EXISTING);//copy the file and place it in new location
+            
+        }finally{
+           source.close();//end stream
+           System.out.println(fileName+" from "+  pathforCopiedContents +" has been copied to " +desiredFilePath);
+        }
+
     static void listContents(InodeTable it){
         //output all folders
         System.out.println("FOLDERS");
@@ -122,6 +141,8 @@ public class ext2Reader {
         //go to root
         currentIT = new InodeTable(raf, sb, gd, 2);
         //changeFolder(currentIT);
+
+        
         
         String command = "";
         //command loop
@@ -143,7 +164,12 @@ public class ext2Reader {
                     listContents(currentIT);
                     break;
                 case "cp":
-                    System.out.println("copy contents to host device");
+                    System.out.print("Enter a Path to where you would like the File to be placed on the Host Drive:");
+                    String pathforCopiedContents= scan.nextLine(); //Path to where it will be placed in host drive
+                    System.out.println("What File in the Current Directory will be copied?");
+                    String fileName=scan.nextLine();
+                    copyFile( currentDirPath ,fileName,pathforCopiedContents)
+                    //System.out.println("copied contents to host device");
                     break;
                 case "q":
                 case "Q":
