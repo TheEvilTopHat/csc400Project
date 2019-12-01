@@ -22,17 +22,71 @@ import java.util.Scanner;
 public class ext2Reader {
     
     //class variables
-    String currentDirPath; //full path to current dir
+    static RandomAccessFile raf;
+    static Superblock sb;
+    static GroupDescriptor gd;
+    static String previousDir = "";
+    static String currentDirPath = "/root/"; //full path to current dir
+    static InodeTable currentIT;
     
     //functions to interact with the ext2 file system
-    static void changeFolder(String folder){
-        
+    static void help(){
+        //shows the avalibale commands to the user
+        System.out.println("COMMANDS");
+        System.out.println("cd -> change directory");
+        System.out.println("ls -> list directory contents");
+        System.out.println("cp -> copy file");
+        System.out.println("q -> quit");
+        System.out.println("h -> view commands/help");
+    }
+    static void changeFolder(InodeTable it){
+        //allows the user to change what directory he is in
+        Scanner scan = new Scanner(System.in);
+        for(int i=0;i<it.folders.size();i++){
+            //output which folders can be chagned to
+            System.out.println(Integer.toString(i) + ": " + it.folders.get(i).name);
+        }
+        while(true){
+            try{
+                //get user input for which folder they want
+                System.out.print("folder: ");
+                int dir = Integer.parseInt(scan.nextLine());
+                //get inode for chosen dir
+                int inode = it.folders.get(dir).inode;
+                currentIT = new InodeTable(raf, sb, gd, inode);
+                //TODO THE REST
+                 if(dir >= 2){
+                    currentDirPath += it.folders.get(dir).name + "/";
+                }
+                else if(dir == 1 && currentDirPath !="/root/"){
+                    int sub = it.folders.get(dir).name.length()+1;
+                    currentDirPath=currentDirPath.substring(0, currentDirPath.indexOf(it.folders.get(dir).name, currentDirPath.length() - sub));
+                }
+                break;
+            }
+            //user input error hanlding
+            catch(NumberFormatException e){
+                System.out.println("INPUT VALID NUMBER");
+            }
+            catch(IndexOutOfBoundsException e){
+                System.out.println("ENTER NUMBER IN ACCEPTED VALUES");
+            }
+        }
     }
     static void copyFile(String from, String to){
         
     }
-    static String listContents(){
-        return "";
+    static void listContents(InodeTable it){
+        //output all folders
+        System.out.println("FOLDERS");
+        for(int i=0;i<it.folders.size();i++){
+            System.out.println("    * " + it.folders.get(i).name);
+        }
+        //output all files
+        System.out.println("FILES");
+        for(int i=0;i<it.files.size();i++){
+            System.out.println("    * " + it.files.get(i).name);
+        }
     }
     
 
@@ -44,7 +98,6 @@ public class ext2Reader {
         //scanner creattion
         Scanner scan = new Scanner(System.in);
         //file system
-        RandomAccessFile raf;
         //try to open file throw exception if no file found break if found file
         while(true){
             try {
@@ -61,30 +114,33 @@ public class ext2Reader {
         }
         
         //create superblock class and pass the file
-        Superblock sb = new Superblock(raf); //superblock class
+        sb = new Superblock(raf); //superblock class
         //create group discriptor class
-        GroupDescriptor gd = new GroupDescriptor(raf);
+        gd = new GroupDescriptor(raf);
         //create base indode class
         Inode i = new Inode(raf,gd.inode_table);
         //go to root
-        changeFolder("/");
+        currentIT = new InodeTable(raf, sb, gd, 2);
+        //changeFolder(currentIT);
         
         String command = "";
         //command loop
         while(command.equalsIgnoreCase("q") == false){
             //get input
+            System.out.print(currentDirPath + ": ");
             command = scan.nextLine(); 
             //parse and do command
             switch(command){
                 case "h":
                 case "H":
-                    System.out.println("help list");
+                case "help":
+                    help();
                     break;
                 case "cd":
-                    System.out.println("change dir");
+                    changeFolder(currentIT);
                     break;
                 case "ls":
-                    System.out.println("list directory contents");
+                    listContents(currentIT);
                     break;
                 case "cp":
                     System.out.println("copy contents to host device");
@@ -94,7 +150,7 @@ public class ext2Reader {
                     System.out.println("goodbye");
                     break;
                 default:
-                    System.out.println("Not a reconized command");
+                    System.out.println("Not a reconized command, type h for help");
                     break;
             }
         }
