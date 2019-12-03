@@ -15,6 +15,9 @@ import java.util.logging.Logger;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
+import java.io.File; 
+import java.io.FileOutputStream; 
+import java.io.OutputStream; 
 /**
  *
  * @author Joshua Ralls
@@ -48,11 +51,11 @@ public class CommonFunctions {
     }
       
       
-    public static int searchBlock(int seekoffset,int byteOffset, int length, RandomAccessFile raf) throws IOException{
+    public static int searchBlock(long seekoffset,int byteOffset, int length, RandomAccessFile raf) throws IOException{
          byte[] data = new byte[length];
-         raf.seek(seekoffset);
+        raf.seek(seekoffset);
         raf.read(data);
-         ByteBuffer buffer = ByteBuffer.wrap(data);
+        ByteBuffer buffer = ByteBuffer.wrap(data);
         buffer.order(ByteOrder.LITTLE_ENDIAN);
         int v;
         try{
@@ -78,5 +81,28 @@ public class CommonFunctions {
         return -1;
         */
     }
+    
+    // Method which write the bytes into a file 
+    static void writeBytes(String path, String name, byte[] bytes) 
+    //https://www.geeksforgeeks.org/convert-byte-array-to-file-using-java/
+    { 
+        try { 
+            String fullPath = path+name;
+            // Initialize a pointer 
+            // in file using OutputStream 
+            OutputStream os = new FileOutputStream(fullPath); 
+  
+            // Starts writing the bytes in it 
+            os.write(bytes); 
+            System.out.println("file copied"); 
+  
+            // Close the file 
+            os.close(); 
+        } 
+        catch (Exception e) { 
+            System.out.println("Exception: " + e); 
+        } 
+    } 
+    
     
 }

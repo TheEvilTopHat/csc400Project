@@ -31,6 +31,10 @@ import java.util.Scanner;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+//byte buffer
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 //imports for text input
 import java.util.Scanner;
 
@@ -91,26 +95,40 @@ public class ext2Reader {
         }
     }
 
-   static void copyFile(String desiredFilePath, String fileName, String pathforCopiedContents) throws IOException{//copies a file and places it in a another folder
-       
-        try{
-           source= new FileInputStream(desiredFilePath);//Path to what file will be copied
-           File copiedContents= new File(pathforCopiedContents+"/"+fileName);//where will the copied file be stored in on the Host Drive             
-            Path folder= Paths.get(pathforCopiedContents);//Path to the where the folder will be created
-            if (Files.exists(folder, LinkOption.NOFOLLOW_LINKS)){//if the folder already exist do nothing
+   static void copyFile(String desiredFilePath, String pathforCopiedContents) throws IOException{//copies a file and places it in a another folder
+        //allows the user to change what directory he is in
+        Scanner scan = new Scanner(System.in);
+        int inode;
+        String name;
+        for(int i=0;i<currentIT.files.size();i++){
+            //output which folders can be chagned to
+            System.out.println(Integer.toString(i) + ": " + currentIT.files.get(i).name);
         }
-            else{//create the folder for it to be able to store files
-                Files.createDirectories(Paths.get(pathforCopiedContents));
-                   
-        }           
-            copiedContents.createNewFile();//create a file for the copied contents
-            Path fileCopied= Paths.get(pathforCopiedContents+"/"+fileName);//path for copied contents
-            Files.copy(source, fileCopied, StandardCopyOption.REPLACE_EXISTING);//copy the file and place it in new location
-            
-        }finally{
-           source.close();//end stream
-           System.out.println(fileName+" from "+  pathforCopiedContents +" has been copied to " +desiredFilePath);
+        while(true){
+            try{
+                //get user input for which folder they want
+                System.out.print("file: ");
+                int dir = Integer.parseInt(scan.nextLine());
+                //get inode for chosen dir
+                inode = currentIT.files.get(dir).inode;
+                name = currentIT.files.get(dir).name;
+                break;
+            }
+            //user input error hanlding
+            catch(NumberFormatException e){
+                System.out.println("INPUT VALID NUMBER");
+            }
+            catch(IndexOutOfBoundsException e){
+                System.out.println("ENTER NUMBER IN ACCEPTED VALUES");
+            }
         }
+        //bytes to save
+        //ByteBuffer buffer = ByteBuffer.wrap(data);
+        //buffer.order(ByteOrder.LITTLE_ENDIAN);
+        //go to inode and parse which blocks
+       Inode in = new Inode(sb,gd,raf,inode);
+       //save
+       CommonFunctions.writeBytes(pathforCopiedContents,name,in.data);
     }
 
     static void listContents(InodeTable it){
@@ -154,8 +172,6 @@ public class ext2Reader {
         sb = new Superblock(raf); //superblock class
         //create group discriptor class
         gd = new GroupDescriptor(raf);
-        //create base indode class
-        Inode i = new Inode(raf,gd.inode_table);
         //go to root
         currentIT = new InodeTable(raf, sb, gd, 2);
         //changeFolder(currentIT);
@@ -185,9 +201,8 @@ public class ext2Reader {
                     System.out.print("Enter a Path to where you would like the File to be placed on the Host Drive:");
                     String pathforCopiedContents= scan.nextLine(); //Path to where it will be placed in host drive
                     System.out.println("What File in the Current Directory will be copied?");
-                    String fileName=scan.nextLine();
                     try{
-                        copyFile( currentDirPath ,fileName,pathforCopiedContents);
+                        copyFile( currentDirPath, pathforCopiedContents);
                     }
                     catch(IOException e){
                         System.out.println(e);

@@ -10,6 +10,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.lang.reflect.Array;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -19,10 +21,10 @@ import java.util.logging.Logger;
 //TODO EVERYTHING
 class Inode {
     //location of VD for my computer change for user
-    public RandomAccessFile acessSuperBlock;//File path needs to be added
+    public RandomAccessFile raf;//File path needs to be added
        // ("F:\\Fall2019\\CSC\\CSC400\\400Project\\src\\virtdisk (1)","r");
 
-    
+    public long byteOffset;
     public int uid;
     public int size;
     public int atime;
@@ -34,12 +36,11 @@ class Inode {
     public int blocks;
     public int flags;
     public int inode_table;
-        
+    public byte[] data;
     
-    
-    Inode(RandomAccessFile raf,int inodeTable) {
-        this.acessSuperBlock = raf;
-        inode_table = inodeTable;
+    Inode(Superblock sb, GroupDescriptor gd, RandomAccessFile raf, int inode) {
+        this.raf = raf;
+        byteOffset = CommonFunctions.findByteInodeOffset(sb, gd, inode);
         try{
             forInode();
         }
@@ -47,66 +48,40 @@ class Inode {
             System.out.println(e);
         }
     }
-    
-    public int searchBlock(int seekoffset,int byteOffset, int length) throws IOException{
-        acessSuperBlock.seek(seekoffset);
-        int x = 0;       
-        byte[] bytes = new byte[5];//
-        try {            
-            int byteRead=0;
-            //for loop to assign read integer into an array
-            //reads the needed bytes based on the given length
-            for (int i=0; i<length;i++){
-               int y=acessSuperBlock.read();
-               byteRead+=+acessSuperBlock.read();
-               x++;
-               acessSuperBlock.seek(seekoffset+x);
-
-        } 
-            return byteRead;
-        } catch (IOException ex) {
-            Logger.getLogger(Superblock.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return 404 ;
-    }
-    //
   
     public void forInode() throws IOException{//not done/corect...yet
-        //Missing the corrct start location for the Inode table
-        // inode
-       uid=searchBlock(this.inode_table+2,0,2);
-        //System.out.println(i_uid);
         
-        size=searchBlock(this.inode_table+4,0,4);
-        //System.out.println( i_size);
+        size=CommonFunctions.searchBlock(byteOffset+4,0,4,raf);
+        //go to byte offset
+        raf.seek(byteOffset+40);
+        //read direct blocks
+        int[] directBlocks = new int[12]; //first 12 direct
         
-         atime=searchBlock(this.inode_table+8,0,4);
-        //System.out.println(i_atime);
+        //get block num from direct blocks
+        for(int i = 0; i<directBlocks.length; i++){
+            //get bytes from each block
+            directBlocks[i] = CommonFunctions.searchBlock((40+(int)byteOffset+(i*4)),0,4,raf);
+        }
+        //todo get blocks num from non direct blocks
         
-        ctime=searchBlock(this.inode_table+12,0,4);
-        //System.out.println(i_ctime);
+        //get the raw data from the bytes starting with direct blocks
+        int bytesToRead = size;
+        this.data = new byte[size];
+        for(int i = 0; i<directBlocks.length; i++){
+            byte[] block = new byte[1024];//block size
+            //get bytes from each block
+            raf.seek(directBlocks[i]*1024);
+            raf.read(block);
+            for(int j=0; j<block.length; j++){
+                if(bytesToRead > 0){
+                    data[size-bytesToRead] = block[j];
+                    bytesToRead--;
+                }
+            }
+            
+        }
+        System.out.println("TODO");
         
-        mtime=searchBlock(this.inode_table+16,0,4);
-        //System.out.println( i_mtime);
-        
-        dtime=searchBlock(this.inode_table+20,0,4);
-        //System.out.println(i_dtime);
-        
-        gid=searchBlock(this.inode_table+24,0,2);
-        //System.out.println( i_gid);
-        
-        links_count=searchBlock(this.inode_table+26,0,2);
-        //
-        blocks=searchBlock(this.inode_table+28,0,60);
-        //System.out.println(i_blocks);
-        
-        flags=searchBlock(this.inode_table+32,0,4);
-        //System.out.println(i_flags);
-        
-    }
-        
-        
-        
-        
+    }      
         
 }
