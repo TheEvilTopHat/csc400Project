@@ -12,7 +12,9 @@ import java.util.List;
 
 /**
  *
- * @author joshua
+ * @author Joshua Ralls
+ * @author Darius Thomas
+ * 
  */
 class InodeTable {
     

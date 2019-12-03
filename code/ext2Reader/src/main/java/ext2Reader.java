@@ -6,9 +6,10 @@
 
 /**
  *
- * @author joshua
+ * @author Joshua Ralls
+ * @author Darius Thomas
+ * 
  */
-
 //imports for file handling 
 import java.io.File;
 import java.io.FileInputStream;
@@ -185,7 +186,12 @@ public class ext2Reader {
                     String pathforCopiedContents= scan.nextLine(); //Path to where it will be placed in host drive
                     System.out.println("What File in the Current Directory will be copied?");
                     String fileName=scan.nextLine();
-                    copyFile( currentDirPath ,fileName,pathforCopiedContents)
+                    try{
+                        copyFile( currentDirPath ,fileName,pathforCopiedContents);
+                    }
+                    catch(IOException e){
+                        System.out.println(e);
+                    }
                     //System.out.println("copied contents to host device");
                     break;
                 case "q":

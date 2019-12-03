@@ -6,9 +6,10 @@
 
 /**
  *
- * @author joshua
+ * @author Joshua Ralls
+ * @author Darius Thomas
+ * 
  */
-
 
 //TODO EVERYTHING
 import java.io.FileNotFoundException;

@@ -17,7 +17,9 @@ import java.nio.ByteOrder;
 import java.util.List;
 /**
  *
- * @author joshua
+ * @author Joshua Ralls
+ * @author Darius Thomas
+ * 
  */
 public class CommonFunctions {
     

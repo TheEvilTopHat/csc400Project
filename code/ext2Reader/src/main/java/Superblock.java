@@ -1,3 +1,10 @@
+/**
+ *
+ * @author Joshua Ralls
+ * @author Darius Thomas
+ * 
+ */
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -8,7 +15,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-//TODO EVERYTHING
 class Superblock {
     //location of VD for my computer change for user
     public RandomAccessFile acessSuperBlock;//File path needs to be added
