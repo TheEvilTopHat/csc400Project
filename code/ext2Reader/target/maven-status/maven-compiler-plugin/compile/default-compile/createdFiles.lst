@@ -1,0 +1,9 @@
+Static.class
+ext2Reader.class
+Superblock.class
+InodeTable.class
+Inode.class
+CommonFunctions.class
+GroupDescriptor.class
+InodeTableInode.class
+InodeTable$inode.class
