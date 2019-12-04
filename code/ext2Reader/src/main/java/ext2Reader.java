@@ -94,7 +94,6 @@ public class ext2Reader {
             }
         }
     }
-
    static void copyFile(String desiredFilePath, String pathforCopiedContents) throws IOException{//copies a file and places it in a another folder
         //allows the user to change what directory he is in
         Scanner scan = new Scanner(System.in);
