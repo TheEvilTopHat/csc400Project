@@ -76,6 +76,15 @@ class Inode {
         for(int i = 0; i< sb.block_size/4; i++ ){
             ibl[i] = CommonFunctions.searchBlock((indirectBlock*1024+(i*4)),0,4,raf);
         }
+        long[] dbl = new long[sb.block_size/4]; //indirect block list
+        //get the blocks from the indrectBlocks
+        for(int i = 0; i< sb.block_size/4; i++ ){
+            dbl[i] = CommonFunctions.searchBlock((doubleIndirect*1024+(i*4)),0,4,raf);
+        }
+        long[] tbl = new long[sb.block_size/4]; //indirect block list
+        for(int i = 0; i< sb.block_size/4; i++ ){
+            tbl[i] = CommonFunctions.searchBlock((tripIndirect*1024+(i*4)),0,4,raf);
+        }
         //get the raw data from the bytes starting with direct blocks
         int bytesToRead = size;
         this.data = new byte[size];
@@ -109,6 +118,31 @@ class Inode {
                         bytesToRead--;
                     }
                 }            
+            }
+            //double indirect block
+            for(int i = 0; i<ibl.length; i++){
+                byte[] block = new byte[1024];//block size
+                //get bytes from each block
+                for(int k=0; k<dbl.length; k++){
+                    //long[] b = new long[sb.block_size/4]; //indirect block list
+                    //get the blocks from the indrectBlocks
+                    for(int h = 0; h< sb.block_size/4; h++ ){
+                        long b = CommonFunctions.searchBlock((dbl[i]*1024+(h*4)),0,4,raf);
+                        //b[i] = CommonFunctions.searchBlock((dbl[i]*1024+(h*4)),0,4,raf);
+                        raf.seek(b*1024);
+                        raf.read(block);
+                        for(int j=0; j<block.length; j++){
+                            if(bytesToRead > 0){
+                                data[size-bytesToRead] = block[j];
+                                bytesToRead--;
+                            }
+                            else{
+                                return;
+                            }
+                        }
+                    }
+                        
+                }
             }
       //  System.out.println("todo");
     }      
