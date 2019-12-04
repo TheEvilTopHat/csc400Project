@@ -37,8 +37,12 @@ class Inode {
     public int flags;
     public int inode_table;
     public byte[] data;
+    Superblock sb;
+    GroupDescriptor gd;
     
     Inode(Superblock sb, GroupDescriptor gd, RandomAccessFile raf, int inode) {
+        this.sb = sb;
+        this.gd = gd;
         this.raf = raf;
         byteOffset = CommonFunctions.findByteInodeOffset(sb, gd, inode);
         try{
@@ -55,15 +59,23 @@ class Inode {
         //go to byte offset
         raf.seek(byteOffset+40);
         //read direct blocks
-        int[] directBlocks = new int[12]; //first 12 direct
-        
+        long[] directBlocks = new long[12]; //first 12 direct
         //get block num from direct blocks
         for(int i = 0; i<directBlocks.length; i++){
             //get bytes from each block
-            directBlocks[i] = CommonFunctions.searchBlock((40+(int)byteOffset+(i*4)),0,4,raf);
+            directBlocks[i] = CommonFunctions.searchBlock((40+byteOffset+(i*4)),0,4,raf);
         }
         //todo get blocks num from non direct blocks
+        //get 13 block
+        int indirectBlock = CommonFunctions.searchBlock((40+48+byteOffset),0,4,raf);
+        int doubleIndirect = CommonFunctions.searchBlock((40+52+byteOffset),0,4,raf);
+        int tripIndirect = CommonFunctions.searchBlock((40+56+byteOffset),0,4,raf);
         
+        long[] ibl = new long[sb.block_size/4]; //indirect block list
+        //get the blocks from the indrectBlocks
+        for(int i = 0; i< sb.block_size/4; i++ ){
+            ibl[i] = CommonFunctions.searchBlock((indirectBlock*1024+(i*4)),0,4,raf);
+        }
         //get the raw data from the bytes starting with direct blocks
         int bytesToRead = size;
         this.data = new byte[size];
@@ -71,17 +83,34 @@ class Inode {
             byte[] block = new byte[1024];//block size
             //get bytes from each block
             raf.seek(directBlocks[i]*1024);
+            //for(int j = 0; j<ibl.length; j++){
+            //    block[j] = (byte)raf.readUnsignedByte();
+            //}
             raf.read(block);
             for(int j=0; j<block.length; j++){
                 if(bytesToRead > 0){
                     data[size-bytesToRead] = block[j];
                     bytesToRead--;
                 }
+            }           
+        } 
+            //indirect blocks
+            for(int i = 0; i<ibl.length; i++){
+                byte[] block = new byte[1024];//block size
+                //get bytes from each block
+                raf.seek(ibl[i]*1024);
+                //for(int j = 0; j<ibl.length; j++){
+                //    block[j] = (byte)raf.readUnsignedByte();
+                //}
+                raf.read(block);
+                for(int j=0; j<block.length; j++){
+                    if(bytesToRead > 0){
+                        data[size-bytesToRead] = block[j];
+                        bytesToRead--;
+                    }
+                }            
             }
-            
-        }
-        System.out.println("TODO");
-        
+      //  System.out.println("todo");
     }      
         
 }
