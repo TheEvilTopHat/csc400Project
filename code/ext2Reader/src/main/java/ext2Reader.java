@@ -44,8 +44,7 @@ public class ext2Reader {
     static RandomAccessFile raf;
     static Superblock sb;
     static GroupDescriptor gd;
-    static String previousDir = "";
-    static String currentDirPath = "/root/"; //full path to current dir
+    static String currentDirPath = "command"; //not implmeted
     static InodeTable currentIT;
     static  InputStream source;
     static  OutputStream dest;
@@ -75,14 +74,6 @@ public class ext2Reader {
                 //get inode for chosen dir
                 int inode = it.folders.get(dir).inode;
                 currentIT = new InodeTable(raf, sb, gd, inode);
-                //TODO THE REST
-                 if(dir >= 2){
-                    currentDirPath += it.folders.get(dir).name + "/";
-                }
-                else if(dir == 1 && currentDirPath !="/root/"){
-                    int sub = it.folders.get(dir).name.length()+1;
-                    currentDirPath=currentDirPath.substring(0, currentDirPath.indexOf(it.folders.get(dir).name, currentDirPath.length() - sub));
-                }
                 break;
             }
             //user input error hanlding

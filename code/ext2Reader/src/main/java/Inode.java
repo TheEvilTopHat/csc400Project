@@ -120,12 +120,9 @@ class Inode {
                 }            
             }
             //double indirect block
-            for(int i = 0; i<ibl.length; i++){
+            for(int i = 0; i<dbl.length; i++){
                 byte[] block = new byte[1024];//block size
                 //get bytes from each block
-                for(int k=0; k<dbl.length; k++){
-                    //long[] b = new long[sb.block_size/4]; //indirect block list
-                    //get the blocks from the indrectBlocks
                     for(int h = 0; h< sb.block_size/4; h++ ){
                         long b = CommonFunctions.searchBlock((dbl[i]*1024+(h*4)),0,4,raf);
                         //b[i] = CommonFunctions.searchBlock((dbl[i]*1024+(h*4)),0,4,raf);
@@ -140,11 +137,41 @@ class Inode {
                                 return;
                             }
                         }
-                    }
                         
-                }
+                    }
             }
-      //  System.out.println("todo");
+            //tripple indirect block
+            for(int i = 0; i<tbl.length; i++){
+                byte[] block = new byte[1024];//block size
+                //get bytes from each block
+                //double indirect block
+                long[] tdbl = new long[sb.block_size/4]; //indirect block list
+                //get the blocks from the indrectBlocks
+                for(int j = 0; j< sb.block_size/4; j++ ){
+                    tdbl[j] = CommonFunctions.searchBlock((tbl[i]*1024+(j*4)),0,4,raf);
+                }
+                for(int k = 0; k<dbl.length; k++){
+                    block = new byte[1024];//block size
+                    //get bytes from each block
+                        for(int h = 0; h< sb.block_size/4; h++ ){
+                            long b = CommonFunctions.searchBlock((tdbl[i]*1024+(h*4)),0,4,raf);
+                            //b[i] = CommonFunctions.searchBlock((dbl[i]*1024+(h*4)),0,4,raf);
+                            raf.seek(b*1024);
+                            raf.read(block);
+                            for(int j=0; j<block.length; j++){
+                                if(bytesToRead > 0){
+                                    data[size-bytesToRead] = block[j];
+                                    bytesToRead--;
+                                }
+                                else{
+                                    return;
+                                }
+                            }
+
+                        }
+                }
+                
+            }
     }      
         
 }
